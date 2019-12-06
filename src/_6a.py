@@ -1,5 +1,4 @@
 from file_importer import FileImporter
-from collections import defaultdict
 
 class Obj:
     def __init__(self, key):
