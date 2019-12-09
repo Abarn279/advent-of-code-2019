@@ -1,16 +1,33 @@
+from collections import defaultdict
+
 class IntcodeComputer:
-    def __init__(self, prog, inputs):
+    def __init__(self, prog, inputs = []):
         self.inputs = inputs
-        self.prog = prog
+
+        self.prog = defaultdict(int)
+        self.prog.update({i: item for i, item in enumerate(prog)})
+
         self.halted = False
         self.i = 0
         self.last_output = None
+        self.r_base = 0
 
     def get_val(self, prog, i, mode):
+        ''' Used to get value of an address for reading purposes '''
         if mode == '0':
             return prog[prog[i]]
         if mode == '1':
             return prog[i]
+        if mode == '2':
+            return prog[self.r_base + prog[i]]
+        raise Exception("Invalid mode")
+
+    def get_address(self, i, mode):
+        ''' Used to get address index for writing purposes. Does not support immediate mode. '''
+        if mode == '0':
+            return i
+        if mode == '2':
+            return self.r_base + i
         raise Exception("Invalid mode")
     
     def get_output(self):
@@ -25,17 +42,17 @@ class IntcodeComputer:
 
             if op == "01":
                 a, b = self.get_val(self.prog, self.i+1, modes[2]), self.get_val(self.prog, self.i+2, modes[1])
-                self.prog[self.prog[self.i+3]] = a + b
+                self.prog[self.get_address(self.prog[self.i+3], modes[0])] = a + b
                 self.i += 4
                 
             elif op == "02":
                 a, b = self.get_val(self.prog, self.i+1, modes[2]), self.get_val(self.prog, self.i+2, modes[1])
-                self.prog[self.prog[self.i+3]] = a * b
+                self.prog[self.get_address(self.prog[self.i+3], modes[0])] = a * b
                 self.i += 4
 
             elif op == "03":
                 a = self.prog[self.i+1]
-                self.prog[a] = self.inputs.pop(0)
+                self.prog[self.get_address(a, modes[2])] = self.inputs.pop(0)
                 self.i += 2
 
             elif op == "04":
@@ -60,13 +77,18 @@ class IntcodeComputer:
 
             elif op == "07":
                 a, b = self.get_val(self.prog, self.i+1, modes[2]), self.get_val(self.prog, self.i+2, modes[1])
-                self.prog[self.prog[self.i+3]] = 1 if a < b else 0
+                self.prog[self.get_address(self.prog[self.i+3], modes[0])] = 1 if a < b else 0
                 self.i += 4
 
             elif op == "08":
                 a, b = self.get_val(self.prog, self.i+1, modes[2]), self.get_val(self.prog, self.i+2, modes[1])
-                self.prog[self.prog[self.i+3]] = 1 if a == b else 0
+                self.prog[self.get_address(self.prog[self.i+3], modes[0])] = 1 if a == b else 0
                 self.i += 4
+
+            elif op == "09":
+                a = self.get_val(self.prog, self.i+1, modes[2])
+                self.r_base += a
+                self.i += 2
             
             else:
                 raise Exception("Bad code!")
