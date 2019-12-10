@@ -12,6 +12,7 @@ for y in range(len(inp)):
 asteroids = [v for v, c in grid.items() if c == '#']
 
 max_seen = 0
+coords = None
 for asteroid in asteroids:
     angles_seen = [] # List of ratios of opposite to adjacent sides of triangles (in place of angles)
                      # that are already seen, so that we cannot see any behind them
@@ -30,5 +31,7 @@ for asteroid in asteroids:
         num_seen += 1
     if num_seen > max_seen:
         max_seen = num_seen
+        coords = asteroid
 
 print(max_seen)
+print(coords)
