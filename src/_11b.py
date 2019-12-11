@@ -26,8 +26,6 @@ grid[Vector2(0,0)] = '#'
 direction = 0
 position = Vector2(0, 0)
 
-painted_once = set()
-
 while not computer.halted:
 
     inp = 0 if grid[position] == '.' else 1
@@ -35,7 +33,6 @@ while not computer.halted:
 
     paint_output = computer.get_output()
     grid[position] = '.' if paint_output == 0 else '#'
-    painted_once.add(position)
 
     turn_output = computer.get_output()
     if turn_output == 0:
