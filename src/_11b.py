@@ -3,12 +3,26 @@ from intcode_computer import IntcodeComputer
 from collections import defaultdict
 from aoc_utils import Vector2
 
+def get_limits(grid):
+    return {
+        "y": (min(i.y for i in grid.keys()), max(i.y for i in grid.keys())),
+        "x": (min(i.x for i in grid.keys()), max(i.x for i in grid.keys()))
+    }
+
+def print_grid(grid):
+    limits = get_limits(grid)
+    for y in reversed(range(limits["y"][0], limits["y"][1] + 1)):
+        for x in range(limits["x"][0], limits["x"][1] + 1):
+            print('█' if grid[Vector2(x, y)] == '#' else ' ', end="")
+        print()
+
 DIRECTIONS = {0: Vector2(0, 1), 1: Vector2(1, 0), 2: Vector2(0, -1), 3: Vector2(-1, 0)}
 
 prog = list(map(int, FileImporter.get_input("/../input/11.txt").split(",")))
 
 computer = IntcodeComputer(prog)
 grid = defaultdict(lambda: '.')
+grid[Vector2(0,0)] = '#'
 direction = 0
 position = Vector2(0, 0)
 
@@ -32,4 +46,4 @@ while not computer.halted:
 
     position = position + DIRECTIONS[direction]
 
-print(len(painted_once))
+print_grid(grid)
