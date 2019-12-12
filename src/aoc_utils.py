@@ -35,6 +35,8 @@ class Vector3:
         return (self.x, self.y, self.z)
     def manhattan_distance(self, other):
         return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
+    def clone(self):
+        return Vector3(self.x, self.y, self.z)
     def __add__(self, other):
         return Vector3(self.x + other.x, self.y + other.y, self.z + other.z)
     def __mul__(self, other):
