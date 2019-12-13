@@ -58,17 +58,33 @@ steps = 100000000
 
 lcms = []
 
-for step in range(steps):
-    for moon_i in range(len(moons)):
-        for c in ["x", "y", "z"]:
-            if getattr(moons[moon_i].pos, c) == getattr(initials[moon_i].pos, c) and getattr(moons[moon_i].vel, c) == 0 and getattr(moons[moon_i], "repeat" + c) is None and step != 0:
-                setattr(moons[moon_i], "repeat" + c, step)
+repeatx = None
+repeaty = None
+repeatz = None
 
-    if all_set(moons):
-        components = [i.repeatx for i in moons] + [i.repeaty for i in moons] + [i.repeatz for i in moons]
-        print(lcm(*components))
+for step in range(steps):
+    # Iterate through each component of each moon
+    for c in ["x", "y", "z"]:
+
+        # Broken if any of this component of this moon has not returned to its original place with v_c = 0
+        broken = False                  
+
+        for moon_i in range(len(moons)):
+            if getattr(moons[moon_i].pos, c) == getattr(initials[moon_i].pos, c) and getattr(moons[moon_i].vel, c) == 0 and vars()['repeat' + c] is None and step != 0:
+                continue
+            else:
+                broken = True
+                break
+
+        if not broken:
+            vars()['repeat' + c] = step     # Gross python stuff
+
+    # once we have the period of each component, we're done
+    if repeatx is not None and repeaty is not None and repeatz is not None:
+        print(lcm(repeatx, repeaty, repeatz))
         break
 
+    # below is simulation
     for combo in combinations(moons, 2):
         combo[0].apply_gravity(combo[1])
         combo[1].apply_gravity(combo[0])
