@@ -51,6 +51,9 @@ class IntcodeComputer:
                 self.i += 4
 
             elif op == "03":
+                if len(self.inputs) == 0:
+                    return None
+                    
                 a = self.prog[self.i+1]
                 self.prog[self.get_address(a, modes[2])] = self.inputs.pop(0)
                 self.i += 2
