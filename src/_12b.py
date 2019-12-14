@@ -16,14 +16,6 @@ class Moon:
     def __init__(self, pos: Vector3):
         self.pos = pos
         self.vel = Vector3()
-        self.repeatx = None
-        self.repeaty = None
-        self.repeatz = None
-
-    def __repr__(self):
-        return str.format("(Position: {0} / Velocity: {1}", self.pos, self.vel) + str.format(" // REPEATS: x: {0}, y: {1}, z: {2})", self.repeatx, self.repeaty, self.repeatz)
-    def __str__(self): 
-        return self.__repr__()
     def __eq__(self, other):
         return self.pos == other.pos and self.vel == other.vel
     def clone(self):
@@ -36,19 +28,6 @@ class Moon:
                 setattr(self.vel, component, getattr(self.vel, component) - 1)
     def update(self):
         self.pos.x += self.vel.x; self.pos.y += self.vel.y; self.pos.z += self.vel.z
-    def potential_energy(self):
-        return abs(self.pos.x) + abs(self.pos.y) + abs(self.pos.z)
-    def kinetic_energy(self):
-        return abs(self.vel.x) + abs(self.vel.y) + abs(self.vel.z)
-    def total_energy(self):
-        return self.kinetic_energy() * self.potential_energy()
-
-def all_set(moons):
-    for i in moons:
-        for c in ["x", "y", "z"]:
-            if getattr(i, "repeat" + c) == None:
-                return False
-    return True
 
 inp = FileImporter.get_input("/../input/12.txt").split("\n")
 
