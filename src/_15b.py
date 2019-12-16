@@ -61,4 +61,14 @@ while len(q) > 0:
         if n_position + DIRECTIONS[direction] not in visited: 
             q.append((n_position, direction, comp.clone()))
 
-print_grid(grid)
+minutes = 0
+while any(i == '.' for i in grid.values()):
+    oxy = [i for i in grid.items() if grid[i[0]] == 'O']
+
+    for o in oxy:
+        neighbors = [o[0] + DIRECTIONS[j] for j in [1, 2, 3, 4] if grid[o[0] + DIRECTIONS[j]] == '.']
+
+        for n in neighbors:
+            grid[n] = 'O'
+    minutes += 1
+print(minutes)
