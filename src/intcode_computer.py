@@ -4,6 +4,7 @@ class IntcodeComputer:
     def __init__(self, prog, inputs = []):
         self.inputs = inputs
 
+        self.raw_prog = prog
         self.prog = defaultdict(int)
         self.prog.update({i: item for i, item in enumerate(prog)})
 
@@ -11,6 +12,15 @@ class IntcodeComputer:
         self.i = 0
         self.last_output = None
         self.r_base = 0
+
+    def clone(self):
+        n = IntcodeComputer(self.raw_prog[:])
+        n.inputs = self.inputs[:]
+        n.halted = self.halted
+        n.i = self.i
+        n.last_output = self.last_output
+        n.r_base = self.r_base
+        return n
 
     def get_val(self, prog, i, mode):
         ''' Used to get value of an address for reading purposes '''
