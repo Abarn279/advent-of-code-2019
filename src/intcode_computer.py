@@ -4,7 +4,6 @@ class IntcodeComputer:
     def __init__(self, prog, inputs = []):
         self.inputs = inputs
 
-        self.raw_prog = prog
         self.prog = defaultdict(int)
         self.prog.update({i: item for i, item in enumerate(prog)})
 
@@ -14,7 +13,7 @@ class IntcodeComputer:
         self.r_base = 0
 
     def clone(self):
-        n = IntcodeComputer(self.raw_prog[:])
+        n = IntcodeComputer([self.prog[i] for i in range(len(self.prog))])
         n.inputs = self.inputs[:]
         n.halted = self.halted
         n.i = self.i
