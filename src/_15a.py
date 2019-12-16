@@ -4,21 +4,6 @@ from aoc_utils import Vector2
 from collections import deque, defaultdict
 from random import shuffle
 
-def get_limits(grid):
-    return {
-        "y": (min(i.y for i in grid.keys()), max(i.y for i in grid.keys())),
-        "x": (min(i.x for i in grid.keys()), max(i.x for i in grid.keys()))
-    }
-
-def print_grid(grid, current_pos):
-    limits = get_limits(grid)
-    for y in reversed(range(limits["y"][0], limits["y"][1] + 1)):
-        for x in range(limits["x"][0], limits["x"][1] + 1):
-            print('D' if current_pos == Vector2(x, y) else grid[Vector2(x, y)], end="")
-        print()
-    print()
-
-
 DIRECTIONS = {1: Vector2(0, 1), 2: Vector2(0, -1), 3: Vector2(-1, 0), 4: Vector2(1, 0)}
 
 prog = list(map(int, FileImporter.get_input("/../input/15.txt").split(",")))
