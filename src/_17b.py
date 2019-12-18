@@ -5,20 +5,6 @@ from collections import defaultdict
 
 DIRECTIONS = [Vector2(0, 1), Vector2(0, -1), Vector2(1, 0), Vector2(-1, 0)]
 
-def get_limits(grid):
-    return {
-        "y": (min(i.y for i in grid.keys()), max(i.y for i in grid.keys())),
-        "x": (min(i.x for i in grid.keys()), max(i.x for i in grid.keys()))
-    }
-
-def print_grid(grid):
-    limits = get_limits(grid)
-    for y in range(limits["y"][0], limits["y"][1] + 1):
-        for x in range(limits["x"][0], limits["x"][1] + 1):
-            print(grid[Vector2(x, y)], end="")
-        print()
-    print()
-
 def get_input_line(st):
     l = list(map(ord, list(st)))
     if len(l) > 20:
@@ -41,7 +27,6 @@ img = defaultdict(lambda: ' ')
 y = 0
 x = 0
 
-# Set img
 while not computer.halted:
     c = computer.get_output()
     if c > 1000:
@@ -55,7 +40,3 @@ while not computer.halted:
         continue
     img[Vector2(x, y)] = chr(c)     # Convert from ascii
     x += 1
-
-initial_bot = [i for i in img.keys() if img[i] == '^']
-
-print_grid(img)
