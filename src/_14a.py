@@ -14,30 +14,31 @@ class Reaction:
     def __repr__(self):
         return f'{self.inputs} => {self.output}'
 
-def produce(chemical_id):
-    global amounts
+def produce(chemical_id, amount, amounts_map):
     global reactions
-    global total_ore
     [produce_reaction] = [i for i in reactions if i.output.chemical_id == chemical_id]
 
+    total_ore = 0
     inp_i = 0
     while inp_i != len(produce_reaction.inputs):    # Loop through all the inputs, reducing the amount of that 
         inp = produce_reaction.inputs[inp_i]        # chemical we have by the amount of the input, and producing the output
 
-        if amounts[inp.chemical_id] >= inp.number:  # We have enough of this particular reaction input
-            amounts[inp.chemical_id] -= inp.number
+        required_amount = inp.number * amount
+        if amounts_map[inp.chemical_id] >= required_amount:  # We have enough of this particular reaction input
+            amounts_map[inp.chemical_id] -= required_amount
             inp_i += 1
 
         else:                                       # Need to produce more
-            while amounts[inp.chemical_id] < inp.number:
+            while amounts_map[inp.chemical_id] < required_amount:
 
                 if inp.chemical_id == "ORE":
-                    amounts["ORE"] += inp.number    # Base case for ORE
-                    total_ore += inp.number
+                    amounts_map["ORE"] += required_amount    # Base case for ORE
+                    total_ore += required_amount
                 else:
-                    produce(inp.chemical_id)        # If not ORE, recurse
+                    total_ore += produce(inp.chemical_id, amount, amounts_map)        # If not ORE, recurse
 
-    amounts[produce_reaction.output.chemical_id] += produce_reaction.output.number
+    amounts_map[produce_reaction.output.chemical_id] += produce_reaction.output.number * amount
+    return total_ore
 
 
 # Get input and set up reactions based on it
@@ -57,6 +58,5 @@ for r in reactions_inp:
 
 # map of chemical id to how much we currently have of it
 amounts = defaultdict(int)
-total_ore = 0
-produce("FUEL")
+total_ore = produce("FUEL", 1, amounts)
 print(total_ore)
