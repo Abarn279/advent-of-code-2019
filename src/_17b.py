@@ -3,13 +3,8 @@ from intcode_computer import IntcodeComputer
 from aoc_utils import Vector2
 from collections import defaultdict
 
-DIRECTIONS = [Vector2(0, 1), Vector2(0, -1), Vector2(1, 0), Vector2(-1, 0)]
-
 def get_input_line(st):
-    l = list(map(ord, list(st)))
-    if len(l) > 20:
-        raise Exception("20 chars!")
-    return l + [10]
+    return list(map(ord, list(st))) + [10]
 
 prog = list(map(int, FileImporter.get_input("/../input/17.txt").split(",")))
 
