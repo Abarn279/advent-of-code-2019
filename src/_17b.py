@@ -59,5 +59,3 @@ while not computer.halted:
 initial_bot = [i for i in img.keys() if img[i] == '^']
 
 print_grid(img)
-
-# L,10,R,8,R,6,R,10,L,12,R,8,L,12,L,10,R,8,R,6,R,10,L,12,R,8,L,12,L,10
