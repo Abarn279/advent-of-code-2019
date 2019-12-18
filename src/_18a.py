@@ -18,7 +18,7 @@ class Node(Vector2):
         return self.__repr__()
 
 DIRECTIONS = [Node(0, 1), Node(0, -1), Node(1, 0), Node(-1, 0)]
-IMPASSABLES = string.ascii_uppercase + '#'
+IMPASSABLES = set(string.ascii_uppercase + '#')
 
 def get_limits(grid):
     return {
@@ -37,7 +37,7 @@ def print_grid(grid, cl):
 
 def get_available_keys(grid, current_location):
     ''' A* to find available keys '''
-    
+
     global DIRECTIONS
     global IMPASSABLES
 
