@@ -2,6 +2,10 @@ from file_importer import FileImporter
 import math
 from collections import defaultdict
 
+def roundup(x, y):
+    ''' Rounds x up to nearest y '''
+    return x if x % y == 0 else x + y - x % y
+
 class ReactionComponent:
     def __init__(self, chemical_id, number):
         self.chemical_id = chemical_id; self.number = number
@@ -18,26 +22,35 @@ def produce(chemical_id, amount, amounts_map):
     global reactions
     [produce_reaction] = [i for i in reactions if i.output.chemical_id == chemical_id]
 
+    if amount < produce_reaction.output.number:
+        amount = produce_reaction.output.number
+    multiple = amount // produce_reaction.output.number
+    remainder = amount % produce_reaction.output.number
+
     total_ore = 0
     inp_i = 0
     while inp_i != len(produce_reaction.inputs):    # Loop through all the inputs, reducing the amount of that 
         inp = produce_reaction.inputs[inp_i]        # chemical we have by the amount of the input, and producing the output
 
-        required_amount = inp.number * amount
+        required_amount = inp.number * multiple
         if amounts_map[inp.chemical_id] >= required_amount:  # We have enough of this particular reaction input
             amounts_map[inp.chemical_id] -= required_amount
             inp_i += 1
 
         else:                                       # Need to produce more
-            while amounts_map[inp.chemical_id] < required_amount:
+            existing = amounts_map[inp.chemical_id]
+            need_to_produce = required_amount - existing
+            
+            if inp.chemical_id == "ORE":
+                amounts_map["ORE"] += need_to_produce    # Base case for ORE
+                total_ore += need_to_produce
+            else:
+                total_ore += produce(inp.chemical_id, need_to_produce, amounts_map)
 
-                if inp.chemical_id == "ORE":
-                    amounts_map["ORE"] += required_amount    # Base case for ORE
-                    total_ore += required_amount
-                else:
-                    total_ore += produce(inp.chemical_id, amount, amounts_map)        # If not ORE, recurse
+    amounts_map[produce_reaction.output.chemical_id] += multiple * produce_reaction.output.number
+    if remainder > 0:
+        total_ore += produce(chemical_id, remainder, amounts_map)
 
-    amounts_map[produce_reaction.output.chemical_id] += produce_reaction.output.number * amount
     return total_ore
 
 
@@ -71,8 +84,8 @@ def b_search():
         elif ore_used > 1000000000000:
             r = m - 1
         else:
-            return amounts["FUEL"]
+            return m
 
+    return l
 
-# map of chemical id to how much we currently have of it
 print(b_search())
