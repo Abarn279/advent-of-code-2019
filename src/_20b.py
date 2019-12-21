@@ -23,11 +23,6 @@ def print_grid(grid, cl):
             print('█' if cl == Vector2(x, y) else grid[Vector2(x, y)], end="")
         print()
 
-def get_shortest_path(grid, starting_position, ending_position):
-    ''' Get shortest path to getting all keys '''
-    global DIRECTIONS
-    pass
-
 def get_portal_name(grid, pos):
     if grid[pos + Vector2(0, -1)] in string.ascii_uppercase: # TOP
         return grid[pos + Vector2(0, -1)] + grid[pos]
