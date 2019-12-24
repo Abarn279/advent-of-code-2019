@@ -34,7 +34,6 @@ def print_grid(grid, cl):
         print()
 
 
-
 def get_available_keys(grid, current_location):
     ''' A* to find available keys '''
 
@@ -84,32 +83,32 @@ def get_available_keys(grid, current_location):
     
 def get_shortest_path(grid, starting_position):
     ''' Get shortest path to getting all keys '''
-    available_keys = get_available_keys(grid, starting_position)
+    # available_keys = get_available_keys(grid, starting_position)
 
-    if len(available_keys) == 0:
-        return 0
+    # if len(available_keys) == 0:
+    #     return 0
 
-    min_path = MAXSIZE
-    for key_point, distance_to in available_keys:
+    # min_path = MAXSIZE
+    # for key_point, distance_to in available_keys:
 
-        # Clone grid, grab position of key, recurse after deleting that key
-        new_grid = grid.copy()
-        new_position = key_point
+    #     # Clone grid, grab position of key, recurse after deleting that key
+    #     new_grid = grid.copy()
+    #     new_position = key_point
 
-        # Chars for key and door
-        key_char = new_grid[new_position]
-        door_char = str.upper(key_char)
+    #     # Chars for key and door
+    #     key_char = new_grid[new_position]
+    #     door_char = str.upper(key_char)
 
-        # Delete key and door
-        door_locations = [i for i in new_grid.keys() if new_grid[i] == door_char]
-        if len(door_locations) == 1:
-            new_grid[door_locations[0]] = '.'
-        new_grid[new_position] = '.'
+    #     # Delete key and door
+    #     door_locations = [i for i in new_grid.keys() if new_grid[i] == door_char]
+    #     if len(door_locations) == 1:
+    #         new_grid[door_locations[0]] = '.'
+    #     new_grid[new_position] = '.'
 
-        path_distance = distance_to + get_shortest_path(new_grid, new_position)
-        min_path = min(min_path, path_distance)
+    #     path_distance = distance_to + get_shortest_path(new_grid, new_position)
+    #     min_path = min(min_path, path_distance)
 
-    return min_path
+    # return min_path
 
 # Input and stuff
 grid = {}
