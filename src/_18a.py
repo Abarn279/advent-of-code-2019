@@ -1,5 +1,5 @@
 from file_importer import FileImporter
-from collections import deque
+from collections import deque, defaultdict
 from aoc_utils import Vector2
 import string
 from sys import maxsize as MAXSIZE
@@ -34,13 +34,13 @@ def print_grid(grid, cl):
         print()
 
 
-def get_available_keys(grid, current_location):
+def get_available_keys(grid, current_location, not_including = ""):
     ''' A* to find available keys '''
 
     global DIRECTIONS
     global IMPASSABLES
 
-    all_keys = [i for i in grid.items() if i[1] in string.ascii_lowercase]
+    all_keys = list([i for i in grid.items() if i[1] in set(string.ascii_lowercase) -set(not_including)])
     available_keys = []
     for location, _id in all_keys:
 
@@ -83,32 +83,50 @@ def get_available_keys(grid, current_location):
     
 def get_shortest_path(grid, starting_position):
     ''' Get shortest path to getting all keys '''
-    # available_keys = get_available_keys(grid, starting_position)
 
-    # if len(available_keys) == 0:
-    #     return 0
+    ####
+    # A* NODE IS TUPLE -> (string of current keys, current cost, current grid, current location)
+    # Indexed by:         (0                     , 1           , 2           , 3               )
+    ####
+    num_keys = sum(1 for i in grid.values() if i in string.ascii_lowercase)
 
-    # min_path = MAXSIZE
-    # for key_point, distance_to in available_keys:
+    def is_goal_fn(node):
+        return len(node[0]) == num_keys
 
-    #     # Clone grid, grab position of key, recurse after deleting that key
-    #     new_grid = grid.copy()
-    #     new_position = key_point
+    def heuristic(node): 
+        return num_keys - len(node[0])
 
-    #     # Chars for key and door
-    #     key_char = new_grid[new_position]
-    #     door_char = str.upper(key_char)
+    def cost(a, b):
+        return b[1] - a[1] 
 
-    #     # Delete key and door
-    #     door_locations = [i for i in new_grid.keys() if new_grid[i] == door_char]
-    #     if len(door_locations) == 1:
-    #         new_grid[door_locations[0]] = '.'
-    #     new_grid[new_position] = '.'
+    def get_neighbors(node):
+        keys = get_available_keys(node[2], node[3], node[0])
+        neighbors = []
 
-    #     path_distance = distance_to + get_shortest_path(new_grid, new_position)
-    #     min_path = min(min_path, path_distance)
+        for key_point, distance_to in keys:
 
-    # return min_path
+            # Clone grid, grab position of key, recurse after deleting that key
+            new_grid = node[2].copy()
+            new_position = key_point
+
+            # Chars for key and door
+            key_char = new_grid[new_position]
+            door_char = str.upper(key_char)
+
+            # Delete key and door
+            door_locations = [i for i in new_grid.keys() if new_grid[i] == door_char]
+            if len(door_locations) == 1:
+                new_grid[door_locations[0]] = '.'
+            new_grid[new_position] = '.'
+
+            new_node = (node[0] + key_char, node[1] + distance_to, new_grid, key_point)
+            neighbors.append(new_node)
+        return neighbors
+            
+    def get_key_fn(node):
+        return node[0]
+
+    return astar(("", 0, grid, starting_position), is_goal_fn, heuristic, cost, get_neighbors, get_key_fn)
 
 # Input and stuff
 grid = {}
