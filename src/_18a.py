@@ -18,7 +18,7 @@ class Node(Vector2):
         return self.__repr__()
 
 DIRECTIONS = [Node(0, 1), Node(0, -1), Node(1, 0), Node(-1, 0)]
-IMPASSABLES = set(string.ascii_uppercase + '#')
+DOORS = set(string.ascii_uppercase)
 
 def get_limits(grid):
     return {
@@ -33,49 +33,46 @@ def print_grid(grid, cl):
             print('@' if cl == Node(x, y) else grid[Node(x, y)], end="")
         print()
 
-def get_available_keys(grid, current_location, not_including = ""):
-    ''' A* to find available keys '''
-
+def get_distance_from_to_key(grid, from_key, to_key):
+    ''' BFS to find distance from one key to another '''
     global DIRECTIONS
-    global IMPASSABLES
+    global DOORS
 
-    all_keys = set(string.ascii_lowercase) - set(not_including)
-    available_keys = []
+    # Locations
+    current_location = from_key[0]
+    end_location = to_key[0]
 
     q = deque()
     visited = set()
-    q.append((current_location, 0))
+    q.append((current_location, 0, [])) # BFS node is location, distance to this location, doors encountered on the way here
 
     while len(q) > 0:
-        if len(available_keys) == len(all_keys):
-            break
+        location, distance_to, doors_encountered = q.popleft()
+        visited.add(location)
 
-        cl, d = q.popleft()
-        visited.add(cl)
+        if location == end_location:
+            return (location, distance_to, doors_encountered)
 
-        if grid[cl] in all_keys:
-            available_keys.append((cl, d))
+        if grid[location] in DOORS:
+            doors_encountered.append(grid[location])
 
         for direction in DIRECTIONS:
-            neighbor = cl + direction
+            neighbor = location + direction
 
             if neighbor in visited:
                 continue
 
-            # impassibles is all doors, all walls
-            if grid[neighbor] in IMPASSABLES - set(not_including.upper()):
+            if grid[neighbor] == '#':
                 continue
 
-            q.append((neighbor, d + 1))
-            
-    return available_keys
+            q.append((neighbor, distance_to + 1, doors_encountered[:]))
     
-def get_shortest_path(grid, starting_position):
+def get_shortest_path(grid, starting_position, distance_map):
     ''' Get shortest path to getting all keys '''
 
     ####
-    # A* NODE IS TUPLE -> (string of current keys, current cost, current grid, current location)
-    # Indexed by:         (0                     , 1           , 2           , 3               )
+    # A* NODE IS TUPLE -> (string of current keys, current cost, current location)
+    # Indexed by:         (0                     , 1           , 2               )
     ####
     num_keys = sum(1 for i in grid.values() if i in string.ascii_lowercase)
 
@@ -89,33 +86,32 @@ def get_shortest_path(grid, starting_position):
         return b[1] - a[1] 
 
     def get_neighbors(node):
-        keys = get_available_keys(node[2], node[3], node[0])
+        keys_acquired = set(node[0])
+
+        this_char = grid[node[2]]
+        distances_from_here = distance_map[this_char]
+        keys_available = []
+
+        # Keys are available if keys_encountered on the path is a subset of keys_acquired
+        for other_char_key in distances_from_here:
+            other_char_pos, distance_to_other, doors_encountered = distance_map[this_char][other_char_key]
+            doors_encountered = set(map(lambda x: x.lower(), doors_encountered)) # Turn encountered keys for this path into a set
+
+            # If all of the keys on this path have been acquired, it's a viable path
+            if other_char_key[1] not in keys_acquired and doors_encountered.issubset(keys_acquired):
+                keys_available.append((other_char_pos, distance_to_other, other_char_key[1]))
+
         neighbors = []
-
-        for key_point, distance_to in keys:
-
-            # # Clone grid, grab position of key, recurse after deleting that key
-            # new_grid = node[2].copy()
-            # new_position = key_point
-
-            # # Chars for key and door
-            key_char = grid[key_point]
-            # door_char = str.upper(key_char)
-
-            # # Delete key and door
-            # door_locations = [i for i in new_grid.keys() if new_grid[i] == door_char]
-            # if len(door_locations) == 1:
-            #     new_grid[door_locations[0]] = '.'
-            # new_grid[new_position] = '.'
-
-            new_node = ("".join(sorted(node[0])) + key_char, node[1] + distance_to, grid, key_point)
+        for key_point, distance_to, key_char in keys_available:
+            new_node = ("".join(sorted(node[0])) + key_char, node[1] + distance_to, key_point)
             neighbors.append(new_node)
+
         return neighbors
             
     def get_key_fn(node):
         return node[0]
 
-    return astar(("", 0, grid, starting_position), is_goal_fn, heuristic, cost, get_neighbors, get_key_fn)
+    return astar(("", 0, starting_position), is_goal_fn, heuristic, cost, get_neighbors, get_key_fn)
 
 # Input and stuff
 grid = {}
@@ -124,7 +120,22 @@ for y in range(len(inp)):
     for x in range(len(inp[y])):
         grid[Node(x, y)] = inp[y][x]
 
+# Find starting position
 [starting_position] = [i for i in grid.items() if i[1] == '@']
+starting_position = (starting_position[0], '.')
 grid[starting_position[0]] = '.'
 
-print(get_shortest_path(grid, starting_position[0]))
+distance_map = defaultdict(lambda: {})       # map of key char to a map of other key chars and the distance to them 
+all_keys = [i for i in grid.items() if i[1] in string.ascii_lowercase] + [starting_position]
+
+for key in all_keys:
+    other_keys = [i for i in all_keys if i[1] != key[1]]
+    for other_key in other_keys:
+
+        if other_key[1] == '.':
+            continue
+
+        distance = get_distance_from_to_key(grid, key, other_key)
+        distance_map[key[1]][other_key] = distance
+
+print(get_shortest_path(grid, starting_position[0], distance_map))
