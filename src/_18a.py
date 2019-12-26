@@ -33,52 +33,41 @@ def print_grid(grid, cl):
             print('@' if cl == Node(x, y) else grid[Node(x, y)], end="")
         print()
 
-
 def get_available_keys(grid, current_location, not_including = ""):
     ''' A* to find available keys '''
 
     global DIRECTIONS
     global IMPASSABLES
 
-    all_keys = list([i for i in grid.items() if i[1] in set(string.ascii_lowercase) -set(not_including)])
+    all_keys = set(string.ascii_lowercase) - set(not_including)
     available_keys = []
-    for location, _id in all_keys:
 
-        visited = set()
+    q = deque()
+    visited = set()
+    q.append((current_location, 0))
 
-        def is_goal_fn(location):
-            x = grid[location]
-            return x == _id
+    while len(q) > 0:
+        if len(available_keys) == len(all_keys):
+            break
 
-        def heuristic(l): 
-            return l.manhattan_distance(location)
+        cl, d = q.popleft()
+        visited.add(cl)
 
-        def cost(a, b):
-            return 1
+        if grid[cl] in all_keys:
+            available_keys.append((cl, d))
 
-        def get_neighbors(l):
-            neighbors = []
-            for d in DIRECTIONS:
-                neighbor = l + d
+        for direction in DIRECTIONS:
+            neighbor = cl + direction
 
-                if neighbor in visited:
-                    continue
+            if neighbor in visited:
+                continue
 
-                if grid[neighbor] in IMPASSABLES:
-                    continue
-                visited.add(neighbor)
+            # impassibles is all doors, all walls
+            if grid[neighbor] in IMPASSABLES - set(not_including.upper()):
+                continue
 
-                neighbors.append(neighbor)
-
-            return neighbors
-                
-        def get_key_fn(l):
-            return str(l)
-
-        d = astar(current_location, is_goal_fn, heuristic, cost, get_neighbors, get_key_fn)
-        if d is not None:
-            available_keys.append((location, d))
-
+            q.append((neighbor, d + 1))
+            
     return available_keys
     
 def get_shortest_path(grid, starting_position):
@@ -105,21 +94,21 @@ def get_shortest_path(grid, starting_position):
 
         for key_point, distance_to in keys:
 
-            # Clone grid, grab position of key, recurse after deleting that key
-            new_grid = node[2].copy()
-            new_position = key_point
+            # # Clone grid, grab position of key, recurse after deleting that key
+            # new_grid = node[2].copy()
+            # new_position = key_point
 
-            # Chars for key and door
-            key_char = new_grid[new_position]
-            door_char = str.upper(key_char)
+            # # Chars for key and door
+            key_char = grid[key_point]
+            # door_char = str.upper(key_char)
 
-            # Delete key and door
-            door_locations = [i for i in new_grid.keys() if new_grid[i] == door_char]
-            if len(door_locations) == 1:
-                new_grid[door_locations[0]] = '.'
-            new_grid[new_position] = '.'
+            # # Delete key and door
+            # door_locations = [i for i in new_grid.keys() if new_grid[i] == door_char]
+            # if len(door_locations) == 1:
+            #     new_grid[door_locations[0]] = '.'
+            # new_grid[new_position] = '.'
 
-            new_node = (node[0] + key_char, node[1] + distance_to, new_grid, key_point)
+            new_node = ("".join(sorted(node[0])) + key_char, node[1] + distance_to, grid, key_point)
             neighbors.append(new_node)
         return neighbors
             
