@@ -1,7 +1,16 @@
+v2Cache = {}
 class Vector2:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.cached_string = f'{self.x},{self.y}'
+    @staticmethod
+    def create(x, y):
+        if (x, y) in v2Cache:
+            return v2Cache[(x, y)]
+        v = Vector2(x, y)
+        v2Cache[(x, y)] = v
+        return v
     def to_tuple(self):
         return (self.x, self.y)
     def to_yx_tuple(self):
@@ -20,7 +29,7 @@ class Vector2:
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
     def __hash__(self):
-        return hash(f'{self.x},{self.y}')
+        return hash(self.cached_string)
     def __repr__(self):
         return 'x: ' + str(self.x) + ', y: ' + str(self.y)
     def __str__(self):
