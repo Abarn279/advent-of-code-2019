@@ -4,6 +4,7 @@ from aoc_utils import Vector2
 import string
 from sys import maxsize as MAXSIZE
 from searches import astar
+from time import time
 
 class Node(Vector2):
     def __init__(self, x, y):
@@ -75,12 +76,19 @@ def get_shortest_path(grid, starting_position, distance_map):
     # Indexed by:         (0                     , 1           , 2               )
     ####
     num_keys = sum(1 for i in grid.values() if i in string.ascii_lowercase)
+    min_dist = 100000
+    for this_char in distance_map:
+        distances = distance_map[this_char]
+        for other_char_key in distances:
+            other_char_pos, distance_to_other, doors_encountered = distance_map[this_char][other_char_key]
+            if distance_to_other < min_dist:
+                min_dist = distance_to_other
 
     def is_goal_fn(node):
         return len(node[0]) == num_keys
 
     def heuristic(node): 
-        return num_keys - len(node[0])
+        return min_dist * (num_keys - len(node[0]))
 
     def cost(a, b):
         return b[1] - a[1] 
