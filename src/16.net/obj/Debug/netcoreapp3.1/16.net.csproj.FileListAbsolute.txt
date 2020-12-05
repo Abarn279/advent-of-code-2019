@@ -1,0 +1,13 @@
+C:\_Code\advent-of-code-2019\src\16.net\bin\Debug\netcoreapp3.1\16.net.exe
+C:\_Code\advent-of-code-2019\src\16.net\bin\Debug\netcoreapp3.1\16.net.deps.json
+C:\_Code\advent-of-code-2019\src\16.net\bin\Debug\netcoreapp3.1\16.net.runtimeconfig.json
+C:\_Code\advent-of-code-2019\src\16.net\bin\Debug\netcoreapp3.1\16.net.runtimeconfig.dev.json
+C:\_Code\advent-of-code-2019\src\16.net\bin\Debug\netcoreapp3.1\16.net.dll
+C:\_Code\advent-of-code-2019\src\16.net\bin\Debug\netcoreapp3.1\16.net.pdb
+C:\_Code\advent-of-code-2019\src\16.net\obj\Debug\netcoreapp3.1\16.net.csprojAssemblyReference.cache
+C:\_Code\advent-of-code-2019\src\16.net\obj\Debug\netcoreapp3.1\16.net.csproj.CoreCompileInputs.cache
+C:\_Code\advent-of-code-2019\src\16.net\obj\Debug\netcoreapp3.1\16.net.AssemblyInfoInputs.cache
+C:\_Code\advent-of-code-2019\src\16.net\obj\Debug\netcoreapp3.1\16.net.AssemblyInfo.cs
+C:\_Code\advent-of-code-2019\src\16.net\obj\Debug\netcoreapp3.1\16.net.dll
+C:\_Code\advent-of-code-2019\src\16.net\obj\Debug\netcoreapp3.1\16.net.pdb
+C:\_Code\advent-of-code-2019\src\16.net\obj\Debug\netcoreapp3.1\16.net.genruntimeconfig.cache
