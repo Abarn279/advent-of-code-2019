@@ -13,7 +13,7 @@ class PriorityQueue:
     def get(self):
         return heapq.heappop(self.elements)[1]
 
-def astar(start, is_goal_fn, heuristic_fn, cost_fn, get_neighbors_fn, get_key_fn):
+def astar(start, is_goal_fn, heuristic_fn, cost_fn, get_neighbors_fn, get_key_fn, include_final_node = False):
     queue = PriorityQueue()
     queue.put(start, 0)
     
@@ -40,5 +40,7 @@ def astar(start, is_goal_fn, heuristic_fn, cost_fn, get_neighbors_fn, get_key_fn
                 last_node[get_key_fn(neighbor)] = current
 
     if found:
-        return cost_from_start[get_key_fn(current)]
+        if not include_final_node:
+            return cost_from_start[get_key_fn(current)]
+        return (cost_from_start[get_key_fn(current)], current)
     return None
