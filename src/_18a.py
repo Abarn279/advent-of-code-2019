@@ -35,7 +35,7 @@ def print_grid(grid, cl):
         print()
 
 def get_distance_from_to_key(grid, from_key, to_key):
-    ''' BFS to find distance from one key to another '''
+    ''' A* to find distance from one key to another '''
     global DIRECTIONS
     global DOORS
 
@@ -43,30 +43,61 @@ def get_distance_from_to_key(grid, from_key, to_key):
     current_location = from_key[0]
     end_location = to_key[0]
 
-    q = deque()
-    visited = set()
-    q.append((current_location, 0, [])) # BFS node is location, distance to this location, doors encountered on the way here
+    #A* node is (location, doors encountered)
 
-    while len(q) > 0:
-        location, distance_to, doors_encountered = q.popleft()
-        visited.add(location)
+    def is_goal_fn(node):
+        return node[0] == end_location
 
-        if location == end_location:
-            return (location, distance_to, doors_encountered)
+    def heuristic(node: Node): 
+        return node[0].manhattan_distance(end_location)
 
-        if grid[location] in DOORS:
-            doors_encountered.append(grid[location])
+    def cost(a, b):
+        return 1
 
-        for direction in DIRECTIONS:
-            neighbor = location + direction
+    def get_neighbors(node):
+        neighbors = []
 
-            if neighbor in visited:
-                continue
+        if grid[node[0]] in DOORS:
+            node[1].append(grid[node[0]])
 
-            if grid[neighbor] == '#':
-                continue
+        for d in DIRECTIONS:
+            new = (node[0] + d, node[1])
+            if grid[new[0]] != '#':
+                neighbors.append(new)
 
-            q.append((neighbor, distance_to + 1, doors_encountered[:]))
+        return neighbors
+            
+    def get_key_fn(node: Node):
+        return node[0].to_tuple()
+
+    as_response = astar((current_location, []), is_goal_fn, heuristic, cost, get_neighbors, get_key_fn, include_final_node = True)
+
+    return (end_location, as_response[0], as_response[1][1]) 
+
+    # q = deque()
+    # visited = set()
+    # q.append((current_location, 0, [])) # BFS node is location, distance to this location, doors encountered on the way here
+
+    # while len(q) > 0:
+    #     location, distance_to, doors_encountered = q.popleft()
+    #     visited.add(location)
+
+    #     if location == end_location:
+    #         return (location, distance_to, doors_encountered)
+
+    #     if grid[location] in DOORS:
+    #         doors_encountered.append(grid[location])
+
+    #     for direction in DIRECTIONS:
+    #         neighbor = location + direction
+
+    #         if neighbor in visited:
+    #             continue
+
+    #         if grid[neighbor] == '#':
+    #             continue
+
+    #         q.append((neighbor, distance_to + 1, doors_encountered[:]))
     
 def get_shortest_path(grid, starting_position, distance_map):
     ''' Get shortest path to getting all keys '''
